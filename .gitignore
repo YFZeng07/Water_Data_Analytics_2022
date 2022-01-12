@@ -28,3 +28,4 @@ vignettes/*.pdf
 .Renviron
 Water_Data_Analytics_2022.Rproj
 .DS_Store
+.Rproj.user
