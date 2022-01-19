@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: Yingfan Zeng
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -26,19 +26,28 @@ Target due date: 2022-01-18
 
 1. Post the link to your forked GitHub repository below. Your repo should include one or more commits and an edited README file.  
 
->  Link:
+>  Link: https://github.com/YFZeng07/Water_Data_Analytics_2022.git
 
 ## Data Visualization Exercises
 
 2. Set up your work session. Check your working directory, load packages `tidyverse`,  `dataRetrieval`, and `zoo`. Set your ggplot theme as theme_classic (you may need to look up how to set your theme).
 
 ```{r, message = FALSE}
+#Set up the work session
+library(tidyverse)
+library(dataRetrieval)
+library(zoo)
+
+#Set a ggplot theme
+MyTheme = theme_classic
 
 ```
 
 3. Upload discharge data for the Eno River at site 02096500 for the same dates as we studied in class (2012-01-01 through 2021-12-31). Obtain data for discharge. Rename the columns with informative titles, as we did in class. 
 
 ```{r}
+#Obtain the discharge data
+Discharge = 
 
 ```
 
