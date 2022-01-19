@@ -47,7 +47,13 @@ MyTheme = theme_classic
 
 ```{r}
 #Obtain the discharge data
-Discharge = 
+Discharge = readNWISdv(siteNumbers = "02096500",
+  parameterCd = "00060", # discharge (ft3/s)
+  startDate = "2012-01-01",
+  endDate = "2021-12-31")
+
+#Renaming columns 
+names(Discharge)[4:5] <- c("Discharge_cfs", "Approval.Code")
 
 ```
 
@@ -63,6 +69,25 @@ Discharge =
 * Add a legend. (hint: Google "add legend two geom layers ggplot")
 
 ```{r}  
+#Mutate the dataframe
+Discharge2 <- Discharge %>%
+  #Add a column of discharge in cubic meter per second
+  mutate(Discharge_mfs = Discharge_cfs*0.0283168,
+         #Add a column of 30-day rollmean
+         RollMean_30d = rollmean(Discharge_mfs, 30, fill = NA))
+
+```
+
+```{r}
+#Create a plot
+ggplot(data = Discharge2, aes(x = Date)) +
+  geom_line(aes(y = Discharge_mfs, col = "Discharge")) +
+  geom_line(aes(y = RollMean_30d, col = "Roll mean")) +
+  scale_color_manual(values=c("Discharge" = "gray", "Roll mean" = "blue")) +
+  scale_y_continuous(trans='log10') +
+  ylab("Discharge (mfs)") +
+  theme(legend.title = element_blank(), legend.position = "top") +
+  theme_classic()
 
 
 ```
@@ -73,7 +98,7 @@ Discharge =
 
 6. What portions of the coding were challenging for you?
 
-> ANSWER: 
+> ANSWER: Editing the legend and y axis name.
 
 7. Interpret the graph you made. What are the things you notice about within- and across-year variability, as well as the differences between daily values and 30-day rolling mean?
 
