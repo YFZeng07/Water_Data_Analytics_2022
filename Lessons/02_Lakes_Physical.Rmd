@@ -33,6 +33,7 @@ library(rLakeAnalyzer)
 
 # Load data
 NTLdata <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+#read_csv under dply package is faster and more efficient for bigger dataset
 
 # set ggplot theme
 theme_set(theme_classic())
@@ -51,14 +52,20 @@ Common steps/checks for data wrangling:
 ```{r}
 # Is the date column perceived as a date by R?
 class(NTLdata$sampledate)
-NTLdata$sampledate <- as.Date(NTLdata$sampledate, format = "%m/%d/%y")
+NTLdata$sampledate <- as.Date(NTLdata$sampledate, format = "%m/%d/%y") 
+#%y: 2 digit year; %Y: 4 digit year
+
+#Changing date
 class(NTLdata$sampledate)
 # What does this column look like now?
 
 # Remove rows that contain NAs in temperature column
 dim(NTLdata)
-NTLdata <- NTLdata %>%
-  drop_na(temperature_C)
+NTLdata <- NTLdata %>% #telling what dataset is so that ↓
+  drop_na(temperature_C) #no need to indicate the column by $
+#Alternative in one line
+#NTLdata <- drop_no(NTLdata, temperature_C) #but it is easier to add/change with the pipeline %>%
+
 dim(NTLdata)  
 
 # How many observations are there for each lake?
@@ -71,7 +78,7 @@ NTLdata_PeterPaul <- NTLdata %>%
 
 # What is another way to use the filter command to get to the same result?
 NTLdata_PeterPaul <- NTLdata %>%
-  filter(lakename == "Paul Lake" | lakename == "Peter Lake")
+  filter(lakename == "Paul Lake" | lakename == "Peter Lake") #|: or 
 
 # Make two data frames, one for each lake
 Pauldata <- NTLdata %>%
@@ -89,6 +96,7 @@ max(Peterdata$sampledate)
 unique(Pauldata$depth)
 unique(Peterdata$depth)
 # Why didn't we use the "summary" function here?
+#summary(Pauldata$depth)
 
 # QA the one data point at 20 m depth. 
 Pauldata <- Pauldata %>%
@@ -111,6 +119,9 @@ ggplot(Pauldata, aes(x = temperature_C, y = depth, color = daynum)) +
   scale_y_reverse() +
   scale_color_viridis_c() +
   labs(x = expression("Temperature "(degree*C)), y = "Depth (m)", color = "DOY")
+
+#epilimnion (up) and hypolimnion (lower)
+#dimictic lake: 2 states/mixes in a year
 
 ```
 
