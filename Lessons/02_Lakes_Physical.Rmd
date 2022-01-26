@@ -120,13 +120,18 @@ ggplot(Pauldata, aes(x = temperature_C, y = depth, color = daynum)) +
   scale_color_viridis_c() +
   labs(x = expression("Temperature "(degree*C)), y = "Depth (m)", color = "DOY")
 
-#epilimnion (up) and hypolimnion (lower)
-#dimictic lake: 2 states/mixes in a year
+
 
 ```
 
 How do temperatures at the surface compare to temperatures at the mid-depths and at the bottom?
-<add notes here>
+
+epilimnion (up) and hypolimnion (lower)
+
+- dimictic lake: 2 states/mixes in a year
+- monomictic: 1 mixing and only stratified in summer (bc not cold enough in winter)
+- polymictic: mixes several times a year (mixing when strong wind event etc) (bc shallower <-> dimictic is deep and shelter)
+- amictic: no mixing
 
 
 ### Graphing seasonal water profiles
@@ -147,6 +152,12 @@ ggplot(subset(Pauldata, year4 == 1993),
   labs(x = expression("Temperature "(degree*C)), y = "Depth (m)", color = "DOY") 
 
 # Now, make a plot as above but with dissolved oxygen saturation instead of temperature.
+ggplot(subset(Pauldata, year4 == 1993), 
+       aes(x = dissolvedOxygen, y = depth, color = daynum)) +
+  geom_point(alpha = 0.5) +
+  scale_y_reverse() +
+  scale_color_viridis_c() +
+  labs(x = "DO (mg/L)", y = "Depth (m)", color = "DOY")
 
 
 ```
@@ -170,8 +181,9 @@ Pauldata_thermo <- Pauldata %>%
   # remove all thermoclines within 1 m of the surface. these can represent transient stratification.
   filter(thermocline > 1)
 
-ggplot(Pauldata_thermo, aes(x = daynum, y = thermocline)) +
-  geom_point() 
+ggplot(Pauldata_thermo, aes(x = daynum, y = thermocline, col = year4)) +
+  geom_point() +
+  scale_color_viridis_c()
   
 ```
 
