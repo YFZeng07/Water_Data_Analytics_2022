@@ -31,7 +31,25 @@ Target due date: 2022-01-25
 5. Set your ggplot theme (can be theme_classic or something else)
 
 ```{r}
+getwd()
 
+#Load packages
+library(tidyverse)
+library(lubridate)
+library(rLakeAnalyzer)
+
+#Set ggplot theme
+MyTheme <- theme_bw(base_size = 14) +
+  theme(axis.text = element_text(color = "black"),
+        legend.position = "right",
+        plot.title = element_text(hjust = 0.5))
+
+#Import the dataset
+NTLdata <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv") %>%
+  mutate(sampledate = as.Date(sampledate, format = "%m/%d/%y")) %>%
+  mutate(Month = month(sampledate)) %>%
+  drop_na(temperature_C)
+  
 
 ```
 
@@ -42,9 +60,32 @@ Target due date: 2022-01-25
 What seasonal trends do you observe, and do these manifest differently in each lake?
 
 ```{r}
+#Subset 1993 data
+NTL1993 <- NTLdata %>%
+  subset(year4 == 1993)
 
+#Plot a temperature profile
+ggplot(data = NTL1993, aes(x = temperature_C, y = depth, col = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  facet_wrap(vars(lakename)) +
+  labs(x = expression("Temperature "(degree*C)), y = "Depth (m)", color = "DOY") +
+  MyTheme
+
+#Plot a DO profile
+ggplot(data = NTL1993, aes(x = dissolvedOxygen, y = depth, col = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  facet_wrap(vars(lakename)) +
+  labs(x = "Dissolved Oxygen (mg/L)", y = "Depth (m)", color = "DOY") +
+  MyTheme
 
 ```
+> Answer: 
+Temperature seasonal trend: clear theromcline in summer and not stratified in winter.
+DO seasonal trend: similar to temperature.
+There are differences among lakes. For example, the shallow Central Long Lake does not have layers as clear as other lakes. 
+
 
 6. Create a new dataset that calculates thermocline depths for all lakes on all dates (hint: you will need group by lake, year, month, DOY, and sample date).
 7. Plot thermocline depth by day of year for your newly made dataset. Color each point by lake name, make the points 50% transparent, and choose a color palette other than the ggplot default. 
@@ -53,6 +94,24 @@ What seasonal trends do you observe, and do these manifest differently in each l
 Do all the lakes have a similar seasonal progression of thermocline deepening? Which lakes have the deepest thermoclines, and how does this relate to their maximum depth? 
 
 ```{r}
+#Calculate the thermocline
+NTL_thermo <- NTLdata %>%
+  group_by(lakename, year4, Month, daynum, sampledate) %>%
+  summarise(thermocline = thermo.depth(wtr = temperature_C, depths = depth, seasonal = FALSE))
+
+#Plot the thermocline
+ggplot(NTL_thermo, aes(x = daynum, y = thermocline, col = lakename)) +
+  geom_point(alpha = 0.5) +
+  scale_color_viridis_d() +
+  labs(x = "DOY", y = "Thermocline (m)", col = "Lake") +
+  MyTheme
+
+#Boxplot for thermocline distribution
+ggplot(NTL_thermo, aes(x = lakename, y = thermocline, fill = as.factor(Month))) +
+  geom_boxplot() +
+  labs(x = "Lake", y = "Thermocline (m)", fill = "Month") +
+  MyTheme
+  
 
 ```
 
