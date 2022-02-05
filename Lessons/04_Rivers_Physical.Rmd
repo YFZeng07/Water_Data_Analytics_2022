@@ -21,7 +21,7 @@ How is climate change impacting discharge in streams and rivers? What are the ne
 ```{r, message = FALSE}
 getwd()
 
-# install.packages("lfstat")
+ install.packages("lfstat")
 
 library(tidyverse)
 library(dataRetrieval)
@@ -54,7 +54,8 @@ Let's import discharge data for the Eno River near Durham for all available date
 EnoDischarge <- readNWISdv(siteNumbers = "02085070",
                      parameterCd = "00060", # discharge (ft3/s)
                      startDate = "", 
-                     endDate = "2021-09-30")
+                     endDate = "2021-09-30") 
+#USGS water year a year starts on 10/1 and ends on 9/30
 
 names(EnoDischarge)[4:5] <- c("Discharge", "Approval.Code")
 
@@ -72,11 +73,13 @@ We can then compute recurrence intervals based on the first 30 years of data.
 ```{r}  
 EnoDischarge <- EnoDischarge %>%
   mutate(Year = year(Date), 
-         WaterYear = water_year(Date, origin = "usgs")) %>%
-  filter(WaterYear != "1963")
+         WaterYear = water_year(Date, origin = "usgs")) %>% 
+  #origin: there are other reginal water years
+  filter(WaterYear != "1963") #water year column is a factor so need "" ↓
 
 # Water Year is a factor. We want to re-classify as numeric.
 EnoDischarge$WaterYear <- as.numeric(as.character(EnoDischarge$WaterYear))
+#factor to numeric: need to convert to character first
 
 EnoRecurrence <- 
   EnoDischarge %>%
