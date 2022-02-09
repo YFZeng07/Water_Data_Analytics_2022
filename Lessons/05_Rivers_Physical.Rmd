@@ -24,7 +24,7 @@ getwd()
 
 # install.packages("EcoHydRology")
 
-library(EcoHydRology)
+library(EcoHydRology) #Load it first because some share functions
 library(tidyverse)
 library(dataRetrieval)
 library(lubridate)
@@ -81,15 +81,18 @@ ggplot(EnoDischarge, aes(x = Date, y = Discharge)) +
 # calculate baseflow with the EcoHydRology package.
 # Note: this function creates two columns which can be joined onto the original dataset.
 EnoDischarge_basesep_EcoHydro <- BaseflowSeparation(EnoDischarge$Discharge)
-
+#↑Just 2 columns
+#Then combine the dfs↓
 EnoDischarge <- cbind(EnoDischarge, EnoDischarge_basesep_EcoHydro)
+
 
 # Let's compare the two approaches. How well do they match up, and is one biased a certain way?
 ggplot(EnoDischarge, aes(x = Baseflow_lfstat, y = bt)) +
   geom_point(alpha = 0.1, size = 1) +
-  geom_abline(slope = 1, intercept = 0, color = "darkred")
+  geom_abline(slope = 1, intercept = 0, color = "darkred") #1:1 line for reference
 
 # How would we test that statistically? [add code here]
+summary(lm(data = EnoDischarge, bt ~ Baseflow_lfstat))
 
 ```
 
@@ -129,7 +132,7 @@ Now, let's calculate some annual flow metrics for the Eno. We can add up daily d
 ```{r}
 EnoDischarge_summary <- EnoDischarge %>%
   group_by(WaterYear) %>%
-  summarise(Discharge.acft.yr = sum(Discharge)*723.968, # what is this factor?
+  summarise(Discharge.acft.yr = sum(Discharge)*723.968, # convert to ac*ft/yr
             Baseflow.acft.yr = sum(bt)*723.968,
             Stormflow.acft.yr = sum(qft)*723.968,
             Prop.bf = Baseflow.acft.yr/Discharge.acft.yr,
@@ -163,6 +166,20 @@ After you've completed your task, find a partner who analyzed the other gage. Co
 This exercise is based off a case study in Zimmer et al. 2020: (Zero or not? Causes and consequences of zero-flow stream gage  readings)[https://wires.onlinelibrary.wiley.com/doi/10.1002/wat2.1436]
 
 ```{r}
+#Import Coolidge discharge data
+Coolidge <- readNWISdv(siteNumbers = "07137500",
+                     parameterCd = "00060", # discharge (ft3/s)
+                     startDate = "1960-10-01", 
+                     endDate = "2005-09-30")
+
+names(Coolidge)[4:5] <- c("Discharge", "Approval.Code")
+
+#Calculate baseflow with the lfstat package, and add Year and Water Year
+Coolidge <- Coolidge %>%
+  mutate(Baseflow_lfstat = baseflow(Discharge), 
+         Stormflow_lfstat = Discharge - Baseflow_lfstat,
+         Year = year(Date), 
+         WaterYear = as.numeric(as.character(water_year(Date))))
 
 
 ```
