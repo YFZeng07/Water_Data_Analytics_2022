@@ -185,7 +185,7 @@ Now let's compare TSI values calculated from chl, secchi depth, and TP. If these
 
 ggplot(LAGOStrophic, aes(x = TSI.chl, y = TSI.secchi, color = samplemonth)) +
   geom_point(alpha = 0.1) + 
-  scale_y_continuous(limits = c(0, 100)) +
+  scale_y_continuous(limits = c(0, 100)) +d
   scale_x_continuous(limits = c(0, 100)) +
   geom_abline(slope = 1, intercept = 0) +
   scale_color_viridis_c(option = "magma", end = 0.8, direction = -1) +
@@ -217,12 +217,14 @@ ggplot(LAGOStrophic, aes(x = state, y = TSI.chl)) +
   geom_hline(yintercept = 40, lty = 2, color = "gray") +
   geom_hline(yintercept = 50, lty = 2, color = "gray") +
   geom_hline(yintercept = 70, lty = 2, color = "gray")
+#40, 50, 70: TSI threshold
 
 ggplot(LAGOStrophic, aes(x = state, fill = trophic.class)) +
   geom_bar(stat = "count", position = position_dodge(preserve = "single")) +
   theme(legend.position = "top") +
   labs(x = "", y = "Number of Observations", fill = "Trophic Class") +
   scale_fill_viridis_d(option = "magma", begin = 0.2, end = 0.8, direction = -1)
+#Some states don't have all 4 classes, so need to specify the width or it would go 2 times wide. 
 
 ```
 
