@@ -64,6 +64,7 @@ Parameters of interest:
 NeuseParams <- whatNWISdata(siteNumbers = "02089500")
 
 NeuseWQ <- readWQPqw(siteNumbers = "USGS-02089500", # Neuse River at Kinston, NC
+                     #need to add a dash after "USGS""
                      parameterCd = c("00915", # calcium, filtered mg/L
                                      "00925", # magnesium, filtered mg/L
                                      "00930", # sodium,filtered mg/L
@@ -93,7 +94,8 @@ NeuseWQ_processed <- NeuseWQ %>%
   pivot_wider(names_from = "Variable", values_from = "ResultMeasureValue")
 
 NeuseFlow_processed <- NeuseFlow %>%
-  select(ActivityStartDate = Date, Flow_cfs = X_00060_00003) %>%
+  select(ActivityStartDate = Date, Flow_cfs = X_00060_00003) %>% 
+  #a new way to change column name
   filter(ActivityStartDate >= min(NeuseWQ_processed$ActivityStartDate) & 
            ActivityStartDate <= max(NeuseWQ_processed$ActivityStartDate))
 
