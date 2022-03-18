@@ -74,7 +74,9 @@ ggplot(NeuseFlow, aes(x = Date, y = Discharge)) +
 
 How would you characterize the time series of discharge and conductivity at this location? Do you see a linear trend over time? What factors might you need to take into account to be able to detect a trend or forecast future conditions?
 
->
+> Seasonality
+> Increase in high peaks
+> 
 
 Are there situations where it would be appropriate to use a linear regression to model a time series? If so, what is an example?
 
@@ -96,6 +98,7 @@ Note: time series objects must be equispaced, which requires interpolation if th
 ```{r}
 
 Neuse_ts <- ts(NeuseFlow[[4]], frequency = 365)
+#Not stored as df but as values
 
 ```
 
@@ -103,11 +106,12 @@ The `stl` function decomposes the time series object into its component parts. W
 
 ```{r}
 ?stl
-# Generate the decomposition
+# Generate the decomposition (can be viewed in the environment)
 Neuse_Decomposed <- stl(Neuse_ts, s.window = "periodic")
 
 # Visualize the decomposed series. 
 plot(Neuse_Decomposed)
+#trend: moving average
 
 # We can extract the components and turn them into data frames
 Neuse_Components <- as.data.frame(Neuse_Decomposed$time.series[,1:3])
@@ -121,6 +125,8 @@ ggplot(Neuse_Components) +
   geom_line(aes(y = trend, x = Date), color = "#c13d75ff") +
   geom_hline(yintercept = 0, lty = 2) +
   labs(x = "", y = "Discharge (cfs)")
+#The trend is always positive, while seasonal moves + and -. ↓
+
 
 # Visualize how the seasonal cycle maps onto the data
 ggplot(Neuse_Components) +
@@ -192,6 +198,27 @@ NeuseCond_monthly$Conductivity <- linearinterpolation$y
 3. Analyze the decomposed time series. Is there distinct seasonality? How does the magnitude of seasonality compare to the trend and random components of the time series? What are some caveats that need to be considered for the gap between October 2001 through February 2007?
 
 ```{r}
+#Create a time series
+NeuseCond_ts <- ts(NeuseCond[[3]])
+
+#Decompose it
+NeuseCond_ts_deco <- stl(Neuse_ts, s.window = "periodic")
+
+#plot it
+plot(NeuseCond_ts_deco)
+
+# We can extract the components and turn them into data frames
+Neuse_Components <- as.data.frame(Neuse_Decomposed$time.series[,1:3])
+Neuse_Components <- mutate(Neuse_Components,
+                      Observed = NeuseFlow$Discharge,     
+                      Date = NeuseFlow$Date)
+
+# Visualize how the trend maps onto the data
+ggplot(Neuse_Components) +
+  geom_line(aes(y = Observed, x = Date), color = "gray", size = 0.25) +
+  geom_line(aes(y = trend, x = Date), color = "#c13d75ff") +
+  geom_hline(yintercept = 0, lty = 2) +
+  labs(x = "", y = "Discharge (cfs)")
 
 ```
 
