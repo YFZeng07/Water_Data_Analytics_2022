@@ -55,9 +55,9 @@ In general, detecting a monotonic trend requires a long sequence of data with fe
 
 Adjusting the data may be necessary to fulfill the assumptions of a trend test. These adjustments include **aggregation**, **subsampling**, and **interpolation**. What do each of these mean, and why might we want to use them?
 
-> aggregation: 
+> aggregation: aggregate daily data for monthly
 
-> subsampling: 
+> subsampling: eg1. part of the data for modeling and the rest to test the model. eg2. too much data so subsample at different frequency (take 1 day every month for monthly data)
 
 > interpolation: 
 
@@ -166,6 +166,8 @@ Exercise: run the same test for discharge.
 NeuseFlow_timeseries <- ts(NeuseFlow_monthly$Discharge_acftmo, frequency = 12,
                            start = c(1976, 1, 1), end = c(2021, 12, 1))
 
+NeuseFlow_timeseries <- ts(NeuseFlow_monthly$Discharge_acftmo, frequency = 12,
+                           start = c(1976, 1, 1), end = c(2021, 12, 1))
 
 ```
 
