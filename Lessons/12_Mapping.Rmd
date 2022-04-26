@@ -119,7 +119,7 @@ ggplot(nc) +
   labs(color = "Stream Order") +
   theme(legend.position = "top")
 
-ggplot(catchment) +
+ggplot( ) +
   geom_sf(fill = "white", color = "gray", lwd = 0.5) +
   geom_sf(data = flowline, aes(color = streamorde)) +
   geom_sf(data = gages, color = "darkred", size = 1) +
